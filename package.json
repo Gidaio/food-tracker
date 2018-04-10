@@ -1,0 +1,19 @@
+{
+  "name": "foodsite",
+  "version": "1.0.0",
+  "description": "A food site.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tanis \"Gidaio\" Kint",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3",
+    "sqlite3": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.11.1",
+    "@types/sqlite3": "^3.1.3"
+  }
+}
