@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Food Tracker</title>
+
+  <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <form id="ingredient-form">
+        <div class="form-group">
+          <label for="ingredient-name">Ingredient Name</label>
+          <input type="text" class="form-control" id="ingredient-name" placeholder="Asparagus" />
+        </div>
+        <div class="form-group">
+          <label for="ingredient-amount">Ingredient Amount</label>
+          <input type="number" class="form-control" id="ingredient-amount" placeholder="7" />
+        </div>
+        <button type="submit" class="btn btn-primary">Click Me!</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function sendPost() {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = () => console.log(xhr.response);
+      xhr.open("POST", "/api/ingredient");
+      xhr.send();
+    }
+
+    const ingredientForm = document.getElementById("ingredient-form");
+    ingredientForm.onsubmit = () => {
+      sendPost();
+      return false;
+    }
+  </script>
+</body>
+</html>

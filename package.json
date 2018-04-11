@@ -2,11 +2,15 @@
   "name": "foodsite",
   "version": "1.0.0",
   "description": "A food site.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gidaio/food-tracker"
+  },
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Tanis \"Gidaio\" Kint",
+  "author": "Tanis \"Gidaio\" Kint <killshade@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "express": "^4.16.3",
