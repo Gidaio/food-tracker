@@ -22,7 +22,8 @@
       true,
       "check-open-brace",
       "check-whitespace"
-    ]
+    ],
+    "trailing-comma": false
   },
   "rulesDirectory": []
 }

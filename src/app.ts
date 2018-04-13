@@ -1,21 +1,19 @@
-import Database = require("better-sqlite3");
-import express = require("express");
+import Database from "better-sqlite3";
+import express from "express";
+import { Logger, transports } from "winston";
 
 import { IngredientService } from "./ingredient-service";
 
 class App {
     private app = express();
+    private logger = new Logger({transports: [
+        new transports.File({ filename: `${__dirname}/log`})
+    ]});
     private database = new Database(`${__dirname}/database.db`);
-    private ingredients = new IngredientService(this.database);
-
-    private static addApiRoutes(app: express.Express) {
-        app.post("/api/ingredient", (request, response) => {
-            response.status(200).send("{\"message\": \"Success!\"");
-        });
-    }
+    private ingredients = new IngredientService(this.database, this.logger);
 
     public main() {
-        App.addApiRoutes(this.app);
+        this.app.use("/api/ingredient", this.ingredients.routes);
 
         this.app.use(express.static(`${__dirname}/frontend`));
 
