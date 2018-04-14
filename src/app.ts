@@ -6,9 +6,12 @@ import { IngredientService } from "./ingredient-service";
 
 class App {
     private app = express();
-    private logger = new Logger({transports: [
-        new transports.File({ filename: `${__dirname}/log`})
-    ]});
+    private logger = new Logger({
+        level: "debug",
+        transports: [
+            new transports.File({ filename: `${__dirname}/out.log`})
+        ]
+    });
     private database = new Database(`${__dirname}/database.db`);
     private ingredients = new IngredientService(this.database, this.logger);
 

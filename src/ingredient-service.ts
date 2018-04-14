@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 import express from "express";
-import { Logger, LoggerInstance } from "winston";
+import { LoggerInstance } from "winston";
 
 interface Ingredient {
     id: number;
@@ -25,8 +25,6 @@ export class IngredientService {
                 name TEXT
             );`);
 
-        console.log("Create table returns data:", createTable.returnsData);
-
         createTable.run();
     }
 
@@ -39,7 +37,8 @@ export class IngredientService {
 
             this.logger.debug("Sending response.");
 
-            response.send(JSON.stringify(ingredients));
+            response.setHeader("Content-Type", "application/json");
+            response.status(200).send(JSON.stringify(ingredients));
         });
 
         router.post("/", (request, response) => {
@@ -51,7 +50,8 @@ export class IngredientService {
 
             this.logger.debug("Sending response.");
 
-            response.send(JSON.stringify({ id }));
+            response.setHeader("Content-Type", "application/json");
+            response.status(200).send(JSON.stringify({ id }));
         });
 
         return router;

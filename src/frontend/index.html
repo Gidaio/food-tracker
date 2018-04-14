@@ -6,31 +6,22 @@
   <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
 </head>
 <body>
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="#">Food Tracker</a>
+  </nav>
   <div class="container">
-    <div class="row">
+    <div class="row mt-3">
       <form id="ingredient-form">
         <div class="form-group">
           <label for="ingredient-name">Ingredient Name</label>
           <input type="text" class="form-control" id="ingredient-name" placeholder="Asparagus" />
         </div>
-        <button type="submit" class="btn btn-primary">Click Me!</button>
+        <button type="submit" class="btn btn-primary">Add New Ingredient</button>
       </form>
     </div>
+    <hr>
   </div>
 
-  <script>
-    function sendPost() {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = () => console.log(xhr.response);
-      xhr.open("POST", "/api/ingredient");
-      xhr.send();
-    }
-
-    const ingredientForm = document.getElementById("ingredient-form");
-    ingredientForm.onsubmit = () => {
-      sendPost();
-      return false;
-    }
-  </script>
+  <script src="/index.js"></script>
 </body>
 </html>
