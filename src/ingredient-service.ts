@@ -42,7 +42,7 @@ export class IngredientService {
         });
 
         router.post("/", (request, response) => {
-            this.logger.debug("POST request on ingredients.");
+            this.logger.debug(`POST request on ingredients with body ${request.body}.`);
 
             const body = JSON.parse(request.body);
 
@@ -51,7 +51,7 @@ export class IngredientService {
             this.logger.debug("Sending response.");
 
             response.setHeader("Content-Type", "application/json");
-            response.status(200).send(JSON.stringify({ id }));
+            response.status(200).send(JSON.stringify({ id, name: body.name }));
         });
 
         return router;
