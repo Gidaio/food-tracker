@@ -16,9 +16,11 @@ class App {
     private ingredients = new IngredientService(this.database, this.logger);
 
     public main() {
-        this.app.use("/api/ingredient", this.ingredients.routes);
-
         this.app.use(express.static(`${__dirname}/frontend`));
+
+        this.app.use(express.json());
+
+        this.app.use("/api/ingredient", this.ingredients.routes);
 
         this.app.listen(3000, () => {
             console.log("Listening on port 3000.");

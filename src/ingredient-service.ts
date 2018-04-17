@@ -42,16 +42,14 @@ export class IngredientService {
         });
 
         router.post("/", (request, response) => {
-            this.logger.debug(`POST request on ingredients with body ${request.body}.`);
+            this.logger.debug(`POST request on ingredients with body ${JSON.stringify(request.body)}.`);
 
-            const body = JSON.parse(request.body);
-
-            const id = this.create(body.name);
+            const id = this.create(request.body.name);
 
             this.logger.debug("Sending response.");
 
             response.setHeader("Content-Type", "application/json");
-            response.status(200).send(JSON.stringify({ id, name: body.name }));
+            response.status(200).send(JSON.stringify({ id, name: request.body.name }));
         });
 
         return router;

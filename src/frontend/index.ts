@@ -16,6 +16,7 @@ function safeElementById<T extends HTMLElement>(id: string): T {
 async function JsonRequest<T>(method: HTTPMethod, url: string, data?: object | undefined): Promise<T> {
     const xhr = new XMLHttpRequest();
     xhr.open(method, url, false);
+    xhr.setRequestHeader("content-type", "application/json");
 
     xhr.send(JSON.stringify(data));
 
