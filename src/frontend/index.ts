@@ -13,29 +13,37 @@ function safeElementById<T extends HTMLElement>(id: string): T {
     return element as T;
 }
 
-async function JsonRequest<T>(method: HTTPMethod, url: string, data?: object | undefined): Promise<T> {
-    const xhr = new XMLHttpRequest();
-    xhr.open(method, url, false);
-    xhr.setRequestHeader("content-type", "application/json");
+function JSONRequest<T>(method: HTTPMethod, url: string, data?: object | undefined): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.setRequestHeader("content-type", "application/json");
 
-    xhr.send(JSON.stringify(data));
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 400) {
+                resolve(JSON.parse(xhr.responseText) as T);
+            }
+            else {
+                reject(new Error(`${xhr.status}: ${xhr.responseText}`));
+            }
+        };
 
-    if (xhr.status >= 200 && xhr.status < 400) {
-        return JSON.parse(xhr.responseText) as T;
-    }
-    else {
-        throw new Error(`${xhr.status}: ${xhr.responseText}`);
-    }
+        xhr.onerror = () => {
+            reject(new Error("Summat broke."));
+        };
+
+        xhr.send(JSON.stringify(data));
+    });
 }
 
 async function createIngredient(): Promise<Ingredient> {
     const ingredientName = safeElementById<HTMLInputElement>("ingredient-name").value;
 
-    return await JsonRequest<Ingredient>("POST", "/api/ingredient", { name: ingredientName });
+    return await JSONRequest<Ingredient>("POST", "/api/ingredient", { name: ingredientName });
 }
 
 async function getAllIngredients() {
-    return await JsonRequest<Ingredient[]>("GET", "/api/ingredient");
+    return await JSONRequest<Ingredient[]>("GET", "/api/ingredient");
 }
 
 function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) {
