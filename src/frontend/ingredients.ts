@@ -5,6 +5,44 @@ interface Ingredient {
     name: string;
 }
 
+class ElementFactory {
+    private constructor(private baseElement: HTMLElement) { }
+
+    public static create(name: string, className: string = "", id: string = ""): ElementFactory {
+        const newElement = document.createElement(name);
+        newElement.className = className;
+        newElement.id = id;
+
+        return new ElementFactory(newElement);
+    }
+
+    public build(): HTMLElement {
+        return this.baseElement;
+    }
+
+    public addChild(name: string, className?: string, id?: string): ElementFactory;
+
+    public addChild(childElement: ElementFactory): ElementFactory;
+
+    public addChild(element: string | ElementFactory, className: string = "", id: string = ""): ElementFactory {
+        if (typeof element === "string") {
+            const newElement = document.createElement(element);
+            newElement.className = className;
+            newElement.id = id;
+
+            this.baseElement.appendChild(newElement);
+        }
+        else if (element instanceof ElementFactory) {
+            this.baseElement.appendChild(element.build());
+        }
+        else {
+            throw new Error("'element' isn't a string or ElementFactory!");
+        }
+
+        return this;
+    }
+}
+
 function safeElementById<T extends HTMLElement>(id: string): T {
     const element = document.getElementById(id);
     if (element === null) {
@@ -47,12 +85,20 @@ async function getAllIngredients() {
 }
 
 function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) {
-    const newRow = document.createElement("div");
-    newRow.className = "row mt-3";
+    const column = document.createElement("div");
+    column.className = "col-12 col-sm-6 col-md-4";
+    const card = document.createElement("div");
+    card.className = "card";
+    const cardBody = document.createElement("div");
+    cardBody.className = "card-body";
+
     const ingredientNameElement = document.createElement("h4");
     ingredientNameElement.innerText = ingredient.name;
-    newRow.appendChild(ingredientNameElement);
-    container.appendChild(newRow);
+
+    cardBody.appendChild(ingredientNameElement);
+    card.appendChild(cardBody);
+    column.appendChild(card);
+    container.appendChild(column);
 }
 
 window.onload = () => {
@@ -70,8 +116,22 @@ window.onload = () => {
     };
 
     getAllIngredients().then((allIngredients) => {
+        let ingredientsProcessed = 0;
+        let currentRow: HTMLDivElement | undefined;
         for (const ingredient of allIngredients) {
-            addIngredientToElement(container, ingredient);
+            if (ingredientsProcessed % 3 === 0) {
+                currentRow = document.createElement("div");
+                currentRow.className = "row";
+                container.appendChild(currentRow);
+            }
+
+            if (!currentRow) {
+                throw new Error("Somehow, there's no row to add to...");
+            }
+
+            addIngredientToElement(currentRow, ingredient);
+
+            ingredientsProcessed++;
         }
     });
 };
