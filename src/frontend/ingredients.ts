@@ -56,7 +56,7 @@ function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) 
 }
 
 window.onload = () => {
-    const container = document.querySelector("div.container") as HTMLDivElement | null;
+    const container = document.querySelector("main.container") as HTMLDivElement | null;
     if (container === null) {
         throw new Error("Couldn't find the container!");
     }

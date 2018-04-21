@@ -6,5 +6,4 @@ echo Compiling JavaScript...
 tsc -p .
 echo Copying HTML...
 mkdir -p build/frontend
-cp -r src/frontend build
-rm build/frontend/*.ts
+cp -r src/frontend/*.html build/frontend
