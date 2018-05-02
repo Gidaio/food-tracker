@@ -7,6 +7,8 @@ type HTTPMethod = "GET" | "PUT" | "POST" | "DELETE";
 interface Ingredient {
     id: number;
     name: string;
+    quantity: number;
+    quantityType: string;
 }
 
 async function createIngredient(): Promise<Ingredient> {
@@ -20,6 +22,21 @@ async function getAllIngredients() {
 }
 
 function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) {
+    // const column = document.createElement("div");
+    // column.className = "col-12 col-sm-6 col-md-4 mb-4";
+
+    // const card = document.createElement("div");
+    // card.className = "card";
+
+    // const cardBody = document.createElement("div");
+    // cardBody.className = "card-body";
+
+    // const ingredientName = document.createElement("h4");
+    // ingredientName.textContent = ingredient.name;
+
+    // const ingredientDetails = document.createElement("div");
+    // ingredientDetails.style.display = "none";
+
     const child = ElementFactory.create("div", "col-12 col-sm-6 col-md-4 mb-4")
         .addChild(ElementFactory.create("div", "card")
             .addChild(ElementFactory.create("div", "card-body")

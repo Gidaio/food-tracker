@@ -5,6 +5,8 @@ import { LoggerInstance } from "winston";
 interface Ingredient {
     id: number;
     name: string;
+    quantity: number;
+    quantityType: string;
 }
 
 export class IngredientService {
@@ -22,7 +24,9 @@ export class IngredientService {
         const createTable = database.prepare(`
             CREATE TABLE IF NOT EXISTS ingredients(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT
+                name TEXT,
+                quantity INTEGER,
+                quantityType TEXT
             );`);
 
         createTable.run();
@@ -44,22 +48,25 @@ export class IngredientService {
         router.post("/", (request, response) => {
             this.logger.debug(`POST request on ingredients with body ${JSON.stringify(request.body)}.`);
 
-            const id = this.create(request.body.name);
+            const { name, quantity, quantityType } = request.body;
+
+            const id = this.create(name, quantity, quantityType);
 
             this.logger.debug("Sending response.");
 
             response.setHeader("Content-Type", "application/json");
-            response.status(200).send(JSON.stringify({ id, name: request.body.name }));
+            response.status(200).send(JSON.stringify({ id, name, quantity, quantityType }));
         });
 
         return router;
     }
 
-    private create(name: string): number {
-        this.logger.debug(`Creating ingredient with name ${name}...`);
+    private create(name: string, quantity: number, quantityType: string): number {
+        this.logger.debug(`Creating ingredient with name ${name} and quantity ${quantity} ${quantityType}...`);
 
-        const createIngredient = this.database.prepare("INSERT INTO ingredients(name) VALUES(?);");
-        createIngredient.run(name);
+        const createIngredient = this.database.prepare(`
+            INSERT INTO ingredients(name, quantity, quantityType) VALUES(?, ?, ?);`);
+        createIngredient.run(name, quantity, quantityType);
 
         const getId = this.database.prepare("SELECT LAST_INSERT_ROWID();");
         const newId = getId.get();

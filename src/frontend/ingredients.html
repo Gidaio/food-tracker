@@ -5,6 +5,10 @@
 
   <!-- Bootstrap's Styles -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/solid.css" integrity="sha384-HTDlLIcgXajNzMJv5hiW5s2fwegQng6Hi+fN6t5VAcwO/9qbg2YEANIyKBlqLsiT" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/fontawesome.css" integrity="sha384-8WwquHbb2jqa7gKWSoAwbJBV2Q+/rQRss9UXL5wlvXOZfSodONmVnifo/+5xJIWX" crossorigin="anonymous">
 </head>
 <body>
   <nav class="navbar navbar-expand-md navbar-light">
@@ -31,15 +35,32 @@
       <div class="col">
         <form id="ingredient-form">
           <div class="form-group">
-            <label for="ingredient-name">Ingredient Name</label>
+            <label for="ingredient-name">Name</label>
             <input type="text" class="form-control" id="ingredient-name" placeholder="Name" />
+          </div>
+          <div class="form-group">
+            <label for="ingredient-quantity">Quantity</label>
+            <input type="number" class="form-control" id="ingredient-quantity" placeholder="Quantity" />
+          </div>
+          <div class="form-group">
+            <label for="ingredient-quantity-type">Quantity Type</label>
+            <input type="text" class="form-control" id="ingredient-quantity-type" placeholder="Quantity Type" />
           </div>
           <button type="submit" class="btn btn-primary">Add New Ingredient</button>
         </form>
       </div>
     </div>
     <hr>
-    <div class="row" id="ingredients-list"></div>
+    <div class="row" id="ingredients-list">
+      <!-- <div class="col-12 col-sm-6 col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title" style="display: inline-block;">Test Ingredient</h4>
+            <i class="fas fa-caret-down" style="float: right; margin-top: 6px;"></i>
+          </div>
+        </div>
+      </div> -->
+    </div>
   </main>
 
   <!-- Bootstrap's Scripts -->
