@@ -20,7 +20,7 @@ async function getAllIngredients() {
 }
 
 function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) {
-    const child = ElementFactory.create("div", "col-12 col-sm-6 col-md-4")
+    const child = ElementFactory.create("div", "col-12 col-sm-6 col-md-4 mb-4")
         .addChild(ElementFactory.create("div", "card")
             .addChild(ElementFactory.create("div", "card-body")
                 .addChild("h4", "", ingredient.name)
