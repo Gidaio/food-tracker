@@ -1,8 +1,7 @@
 // tslint:disable:no-reference
 /// <reference path="./common.ts" />
+/// <reference types="jquery" />
 // tslint:enable:no-reference
-
-type HTTPMethod = "GET" | "PUT" | "POST" | "DELETE";
 
 interface Ingredient {
     id: number;
@@ -22,28 +21,41 @@ async function getAllIngredients() {
 }
 
 function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) {
-    // const column = document.createElement("div");
-    // column.className = "col-12 col-sm-6 col-md-4 mb-4";
+    const child = createElements({
+        name: "div",
+        attributes: { className: "col-12 col-sm-6 col-md-4 mb-4" },
+        content: [{
+            name: "div",
+            attributes: { className: "card" },
+            content: [{
+                name: "div",
+                attributes: { className: "card-header" },
+                content: [{
+                    name: "h4",
+                    attributes: { className: "card-title d-inline-block" },
+                    content: [ingredient.name]
+                }, {
+                    name: "i",
+                    attributes: { className: "fas fa-caret-down float-right mt-1" }
+                }]
+            }, {
+                name: "div",
+                attributes: { className: "card-body slide-hidden" },
+                content: [{
+                    name: "p",
+                    content: [
+                        `Lorem ipsum blah blah blah other stuff. Let's make this decently long so it
+                        does a little wrapping and stuff.`
+                    ]
+                }]
+            }]
+        }]
+    });
 
-    // const card = document.createElement("div");
-    // card.className = "card";
-
-    // const cardBody = document.createElement("div");
-    // cardBody.className = "card-body";
-
-    // const ingredientName = document.createElement("h4");
-    // ingredientName.textContent = ingredient.name;
-
-    // const ingredientDetails = document.createElement("div");
-    // ingredientDetails.style.display = "none";
-
-    const child = ElementFactory.create("div", "col-12 col-sm-6 col-md-4 mb-4")
-        .addChild(ElementFactory.create("div", "card")
-            .addChild(ElementFactory.create("div", "card-body")
-                .addChild("h4", "", ingredient.name)
-            )
-        )
-    .build();
+    safeQuerySelector("div.card-header", child).onclick = (event) => {
+        event.stopPropagation();
+        safeQuerySelector("div.card-body", child).className = "card-body slide-shown";
+    };
 
     container.appendChild(child);
 }

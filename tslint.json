@@ -5,6 +5,7 @@
   ],
   "jsRules": {},
   "rules": {
+    "interface-name": false,
     "member-ordering": [
       true,
       {
@@ -18,6 +19,7 @@
       }
     ],
     "no-console": false,
+    "object-literal-sort-keys": false,
     "one-line": [
       true,
       "check-open-brace",

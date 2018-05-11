@@ -1,0 +1,17 @@
+.slide-hidden {
+    height: 0;
+    padding: 0;
+}
+
+.slide-shown {
+    height: 0;
+    padding: 0;
+    animation: slide 0.5s forwards;
+}
+
+@keyframes slide {
+    to {
+        height: initial;
+        padding: initial;
+    }
+}

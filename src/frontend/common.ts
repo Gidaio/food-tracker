@@ -1,51 +1,37 @@
-class ElementFactory {
-    private constructor(private baseElement: HTMLElement) { }
+type HTTPMethod = "GET" | "PUT" | "POST" | "DELETE";
 
-    public static create(name: string, className: string = "", id: string = ""): ElementFactory {
-        const newElement = document.createElement(name);
-        newElement.className = className;
-        newElement.id = id;
+interface ElementDescriptor {
+    name: string;
+    content?: Array<string | ElementDescriptor>;
+    attributes?: { [key: string]: any };
+}
 
-        return new ElementFactory(newElement);
+// Adapted from
+// https://stackoverflow.com/questions/2946656/advantages-of-createelement-over-innerhtml
+
+function createElements(descriptor: ElementDescriptor) {
+    const element = document.createElement(descriptor.name);
+
+    const attributes = descriptor.attributes;
+
+    if (attributes) {
+        Reflect.ownKeys(attributes).forEach((attribute) => {
+            (element as any)[attribute] = attributes[attribute];
+        });
     }
 
-    public build(): HTMLElement {
-        return this.baseElement;
+    if (descriptor.content) {
+        for (const parameter of descriptor.content) {
+            if (typeof parameter === "string") {
+                element.appendChild(document.createTextNode(parameter));
+            }
+            else {
+                element.appendChild(createElements(parameter));
+            }
+        }
     }
 
-    public addChild(name: string, className?: string, text?: string, id?: string): ElementFactory;
-
-    public addChild(childElement: ElementFactory): ElementFactory;
-
-    public addChild(
-        element: string | ElementFactory,
-        className: string = "",
-        text: string = "",
-        id: string = ""
-    ): ElementFactory {
-        if (typeof element === "string") {
-            const newElement = document.createElement(element);
-            if (className !== "") {
-                newElement.className = className;
-            }
-            if (id !== "") {
-                newElement.id = id;
-            }
-            if (text !== "") {
-                newElement.textContent = text;
-            }
-
-            this.baseElement.appendChild(newElement);
-        }
-        else if (element instanceof ElementFactory) {
-            this.baseElement.appendChild(element.build());
-        }
-        else {
-            throw new Error("'element' isn't a string or ElementFactory!");
-        }
-
-        return this;
-    }
+    return element;
 }
 
 function safeElementById<T extends HTMLElement>(id: string): T {
@@ -56,8 +42,8 @@ function safeElementById<T extends HTMLElement>(id: string): T {
     return element as T;
 }
 
-function safeQuerySelector<T extends HTMLElement>(selector: string): T {
-    const element = document.querySelector(selector);
+function safeQuerySelector<T extends HTMLElement>(selector: string, base: HTMLElement | Document = document): T {
+    const element = base.querySelector(selector);
     if (element === null) {
         throw new Error(`No elements matched the selector ${selector}.`);
     }
