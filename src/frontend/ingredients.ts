@@ -11,9 +11,11 @@ interface Ingredient {
 }
 
 async function createIngredient(): Promise<Ingredient> {
-    const ingredientName = safeElementById<HTMLInputElement>("ingredient-name").value;
+    const name = safeElementById<HTMLInputElement>("ingredient-name").value;
+    const quantity = safeElementById<HTMLInputElement>("ingredient-quantity").value;
+    const quantityType = safeElementById<HTMLInputElement>("ingredient-quantity-type").value;
 
-    return await JSONRequest<Ingredient>("POST", "/api/ingredient", { name: ingredientName });
+    return await JSONRequest<Ingredient>("POST", "/api/ingredient", { name, quantity, quantityType });
 }
 
 async function getAllIngredients() {
@@ -40,21 +42,34 @@ function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) 
                 }]
             }, {
                 name: "div",
-                attributes: { className: "card-body slide-hidden" },
+                attributes: { className: "card-body d-none" },
                 content: [{
                     name: "p",
-                    content: [
-                        `Lorem ipsum blah blah blah other stuff. Let's make this decently long so it
-                        does a little wrapping and stuff.`
+                    content: [{
+                        name: "strong",
+                        content: ["Quantity: "]
+                    },
+                        `${ingredient.quantity} ${ingredient.quantityType}`
                     ]
                 }]
             }]
         }]
     });
 
-    safeQuerySelector("div.card-header", child).onclick = (event) => {
+    const header = safeQuerySelector("div.card-header", child);
+    const caret = safeQuerySelector("i", child);
+    const body = safeQuerySelector("div.card-body", child);
+
+    header.onclick = (event) => {
         event.stopPropagation();
-        safeQuerySelector("div.card-body", child).className = "card-body slide-shown";
+        if (body.classList.contains("d-none")) {
+            body.classList.remove("d-none");
+            caret.className = "fas fa-caret-up float-right mt-1";
+        }
+        else {
+            body.classList.add("d-none");
+            caret.className = "fas fa-caret-down float-right mt-1";
+        }
     };
 
     container.appendChild(child);
@@ -67,6 +82,7 @@ window.onload = () => {
     ingredientForm.onsubmit = () => {
         createIngredient().then((newIngredient) => {
             addIngredientToElement(ingredientsList, newIngredient);
+            ingredientForm.reset();
         });
         return false;
     };

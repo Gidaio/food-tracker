@@ -42,8 +42,8 @@ function safeElementById<T extends HTMLElement>(id: string): T {
     return element as T;
 }
 
-function safeQuerySelector<T extends HTMLElement>(selector: string, base: HTMLElement | Document = document): T {
-    const element = base.querySelector(selector);
+function safeQuerySelector<T extends HTMLElement>(selector: string, context: HTMLElement | Document = document): T {
+    const element = context.querySelector(selector);
     if (element === null) {
         throw new Error(`No elements matched the selector ${selector}.`);
     }
