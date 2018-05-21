@@ -1,25 +1,42 @@
 // tslint:disable:no-reference
 /// <reference path="./common.ts" />
-/// <reference types="jquery" />
 // tslint:enable:no-reference
+
+interface IngredientResponse {
+    id: number;
+    name: string;
+    quantity: number;
+}
 
 interface Ingredient {
     id: number;
     name: string;
-    quantity: number;
-    quantityType: string;
+    quantities: string[];
 }
 
 async function createIngredient(): Promise<Ingredient> {
     const name = safeElementById<HTMLInputElement>("ingredient-name").value;
-    const quantity = safeElementById<HTMLInputElement>("ingredient-quantity").value;
+    const quantity = Number(safeElementById<HTMLInputElement>("ingredient-quantity").value);
     const quantityType = safeElementById<HTMLInputElement>("ingredient-quantity-type").value;
 
-    return await JSONRequest<Ingredient>("POST", "/api/ingredient", { name, quantity, quantityType });
+    const teaspoons = convertDownToTsp(quantity, quantityType as VolumeType);
+
+    return await JSONRequest<Ingredient>("POST", "/api/ingredient", { name, quantity: teaspoons });
 }
 
 async function getAllIngredients() {
-    return await JSONRequest<Ingredient[]>("GET", "/api/ingredient");
+    const ingredientResponses = await JSONRequest<IngredientResponse[]>("GET", "/api/ingredient");
+    const ingredients: Ingredient[] = [];
+
+    for (const response of ingredientResponses) {
+        ingredients.push({
+            id: response.id,
+            name: response.name,
+            quantities: convertUp(response.quantity, "tsp").map((item) => `${item.quantity} ${item.type}`)
+        });
+    }
+
+    return ingredients;
 }
 
 function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) {
@@ -49,7 +66,7 @@ function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) 
                         name: "strong",
                         content: ["Quantity: "]
                     },
-                        `${ingredient.quantity} ${ingredient.quantityType}`
+                        ingredient.quantities.join(", ")
                     ]
                 }]
             }]

@@ -48,25 +48,25 @@ export class IngredientService {
         router.post("/", (request, response) => {
             this.logger.debug(`POST request on ingredients with body ${JSON.stringify(request.body)}.`);
 
-            const { name, quantity, quantityType } = request.body;
+            const { name, quantity } = request.body;
 
-            const id = this.create(name, quantity, quantityType);
+            const id = this.create(name, quantity);
 
             this.logger.debug("Sending response.");
 
             response.setHeader("Content-Type", "application/json");
-            response.status(200).send(JSON.stringify({ id, name, quantity, quantityType }));
+            response.status(200).send(JSON.stringify({ id, name, quantity }));
         });
 
         return router;
     }
 
-    private create(name: string, quantity: number, quantityType: string): number {
-        this.logger.debug(`Creating ingredient with name ${name} and quantity ${quantity} ${quantityType}...`);
+    private create(name: string, quantity: number): number {
+        this.logger.debug(`Creating ingredient with name ${name} and quantity ${quantity} tsp...`);
 
         const createIngredient = this.database.prepare(`
-            INSERT INTO ingredients(name, quantity, quantityType) VALUES(?, ?, ?);`);
-        createIngredient.run(name, quantity, quantityType);
+            INSERT INTO ingredients(name, quantity, quantityType) VALUES(?, ?);`);
+        createIngredient.run(name, quantity);
 
         const getId = this.database.prepare("SELECT LAST_INSERT_ROWID();");
         const newId = getId.get();
