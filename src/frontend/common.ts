@@ -202,7 +202,7 @@ function convertUp(quantity: number, type: VolumeType): Quantity[] {
     }
 
     // Add it to the output.
-    outQuantities.push({ quantity: currentQuantity, type: currentType });
+    outQuantities.push({ quantity: Math.trunc(currentQuantity), type: currentType });
 
     // Then pull off the part we just output.
     currentQuantity -= Math.trunc(currentQuantity);
@@ -216,7 +216,7 @@ function convertUp(quantity: number, type: VolumeType): Quantity[] {
         currentQuantity *= conversion.factor;
         currentType = conversion.type;
         if (currentQuantity >= 1) {
-            outQuantities.push({ quantity: currentQuantity, type: currentType });
+            outQuantities.push({ quantity: Math.trunc(currentQuantity), type: currentType });
             currentQuantity -= Math.trunc(currentQuantity);
         }
     }

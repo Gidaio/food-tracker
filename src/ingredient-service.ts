@@ -25,8 +25,7 @@ export class IngredientService {
             CREATE TABLE IF NOT EXISTS ingredients(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT,
-                quantity INTEGER,
-                quantityType TEXT
+                quantity INTEGER
             );`);
 
         createTable.run();
@@ -65,7 +64,7 @@ export class IngredientService {
         this.logger.debug(`Creating ingredient with name ${name} and quantity ${quantity} tsp...`);
 
         const createIngredient = this.database.prepare(`
-            INSERT INTO ingredients(name, quantity, quantityType) VALUES(?, ?);`);
+            INSERT INTO ingredients(name, quantity) VALUES(?, ?);`);
         createIngredient.run(name, quantity);
 
         const getId = this.database.prepare("SELECT LAST_INSERT_ROWID();");

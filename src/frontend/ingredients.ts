@@ -14,14 +14,24 @@ interface Ingredient {
     quantities: string[];
 }
 
-async function createIngredient(): Promise<Ingredient> {
+function parseIngredientResponse(response: IngredientResponse): Ingredient {
+    const responseQuantities = convertUp(response.quantity, "tsp");
+
+    return {
+        id: response.id,
+        name: response.name,
+        quantities: responseQuantities.map((item) => `${item.quantity} ${item.type}`)
+    };
+}
+
+async function createIngredient() {
     const name = safeElementById<HTMLInputElement>("ingredient-name").value;
     const quantity = Number(safeElementById<HTMLInputElement>("ingredient-quantity").value);
-    const quantityType = safeElementById<HTMLInputElement>("ingredient-quantity-type").value;
+    const quantityType = safeElementById<HTMLSelectElement>("ingredient-quantity-type").value;
 
     const teaspoons = convertDownToTsp(quantity, quantityType as VolumeType);
 
-    return await JSONRequest<Ingredient>("POST", "/api/ingredient", { name, quantity: teaspoons });
+    return await JSONRequest<IngredientResponse>("POST", "/api/ingredient", { name, quantity: teaspoons });
 }
 
 async function getAllIngredients() {
@@ -29,11 +39,7 @@ async function getAllIngredients() {
     const ingredients: Ingredient[] = [];
 
     for (const response of ingredientResponses) {
-        ingredients.push({
-            id: response.id,
-            name: response.name,
-            quantities: convertUp(response.quantity, "tsp").map((item) => `${item.quantity} ${item.type}`)
-        });
+        ingredients.push(parseIngredientResponse(response));
     }
 
     return ingredients;
@@ -98,7 +104,8 @@ window.onload = () => {
     const ingredientForm = safeElementById<HTMLFormElement>("ingredient-form");
     ingredientForm.onsubmit = () => {
         createIngredient().then((newIngredient) => {
-            addIngredientToElement(ingredientsList, newIngredient);
+            const parsedIngredient = parseIngredientResponse(newIngredient);
+            addIngredientToElement(ingredientsList, parsedIngredient);
             ingredientForm.reset();
         });
         return false;
