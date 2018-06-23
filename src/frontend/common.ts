@@ -1,5 +1,7 @@
 type HTTPMethod = "GET" | "PUT" | "POST" | "DELETE";
 type VolumeType = "tsp" | "tbsp" | "fl oz" | "cup" | "pt" | "qt" | "gal";
+type WeightType = "oz" | "lbs";
+type UnitType = VolumeType | WeightType;
 
 interface ElementDescriptor {
     name: string;
@@ -8,12 +10,12 @@ interface ElementDescriptor {
 }
 
 interface Quantity {
-    quantity: number;
-    type: VolumeType;
+    amount: number;
+    type: UnitType;
 }
 
 interface Conversion {
-    type: VolumeType;
+    type: UnitType;
     factor: number;
 }
 
@@ -23,10 +25,11 @@ interface ConversionLink {
 }
 
 type ConversionSet = {
-    [K in VolumeType]: ConversionLink
+    [K in UnitType]: ConversionLink
 };
 
 const conversions: ConversionSet = {
+    // Volume conversions
     tsp: {
         up: {
             type: "tbsp",
@@ -88,6 +91,20 @@ const conversions: ConversionSet = {
             type: "qt",
             factor: 4
         }
+    },
+
+    // Weight conversions
+    oz: {
+        up: {
+            type: "lbs",
+            factor: 1 / 16
+        }
+    },
+    lbs: {
+        down: {
+            type: "oz",
+            factor: 16
+        }
     }
 };
 
@@ -101,7 +118,9 @@ function createElements(descriptor: ElementDescriptor) {
 
     if (attributes) {
         Reflect.ownKeys(attributes).forEach((attribute) => {
-            (element as any)[attribute] = attributes[attribute];
+            if (typeof attribute !== "symbol") {
+                (element as any)[attribute] = attributes[attribute];
+            }
         });
     }
 
@@ -158,73 +177,43 @@ function JSONRequest<T>(method: HTTPMethod, url: string, data?: object | undefin
     });
 }
 
-function convertDownToTsp(quantity: number, type: VolumeType): number {
+function convertToSmallestUnit(quantity: Quantity): Quantity {
     let currentQuantity = quantity;
-    let currentType = type;
 
-    while (currentType !== "tsp") {
-        const conversion = conversions[currentType].down;
-        if (!conversion) {
-            throw new Error(`Couldn't find down-conversion for ${currentType}.`);
-        }
-        currentQuantity *= conversion.factor;
-        currentType = conversion.type;
+    while (conversions[currentQuantity.type].down) {
+        const conversion = conversions[currentQuantity.type].down!;
+        currentQuantity.amount *= conversion.factor;
+        currentQuantity.type = conversion.type;
     }
 
     return currentQuantity;
 }
 
-function convertUp(quantity: number, type: VolumeType): Quantity[] {
-    const outQuantities: Quantity[] = [];
+function convertToLargestWholeUnit(quantity: Quantity): Quantity {
+    let currentQuantity = { ...quantity };
+    let previousQuantity = { ...currentQuantity };
 
-    let currentQuantity = quantity;
-    let currentType = type;
-
-    let previousQuantity: number;
-    let previousType: VolumeType;
-
-    // Convert up from teaspoons until we have a value less than one.
-    while (currentQuantity >= 1 && currentType !== "gal") {
-        previousQuantity = currentQuantity;
-        previousType = currentType;
-        const conversion = conversions[currentType].up;
-        if (!conversion) {
-            throw new Error(`Couldn't find up-conversion for ${currentType}.`);
-        }
-        currentQuantity *= conversion.factor;
-        currentType = conversion.type;
+    while (currentQuantity.amount > 1 && conversions[currentQuantity.type].up) {
+        previousQuantity = { ...currentQuantity };
+        const conversion = conversions[currentQuantity.type].up!;
+        currentQuantity.amount *= conversion.factor;
+        currentQuantity.type = conversion.type;
     }
 
-    // If we overshot, back up a bit.
-    if (currentQuantity < 1) {
-        currentQuantity = previousQuantity!;
-        currentType = previousType!;
-    }
+    return previousQuantity
+}
 
-    // Add it to the output.
-    outQuantities.push({ quantity: Math.trunc(currentQuantity), type: currentType });
+function formatQuantityAmount(amount: number): string {
+    const amountString = amount.toFixed(2);
 
-    // Then pull off the part we just output.
-    currentQuantity -= Math.trunc(currentQuantity);
-
-    // Then, convert down to teaspoons until we get an even number.
-    while (currentQuantity !== 0 && currentType !== "tsp") {
-        const conversion = conversions[currentType].down;
-        if (!conversion) {
-            throw new Error(`Couldn't find down-conversion for ${currentType}.`);
-        }
-        currentQuantity *= conversion.factor;
-        currentType = conversion.type;
-        if (currentQuantity >= 1) {
-            outQuantities.push({ quantity: Math.trunc(currentQuantity), type: currentType });
-            currentQuantity -= Math.trunc(currentQuantity);
+    let index = amountString.length - 1
+    while (amountString[index] === "0" || amountString[index] === ".") {
+        index--;
+        if (amountString[index] === ".") {
+            index--;
+            break;
         }
     }
 
-    // If we still have some left, they're teaspoons.
-    if (currentQuantity > 0) {
-        outQuantities.push({ quantity: currentQuantity, type: "tsp" });
-    }
-
-    return outQuantities;
+    return amountString.slice(0, index + 1)
 }

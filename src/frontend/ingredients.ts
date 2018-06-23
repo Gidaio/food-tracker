@@ -15,12 +15,12 @@ interface Ingredient {
 }
 
 function parseIngredientResponse(response: IngredientResponse): Ingredient {
-    const responseQuantities = convertUp(response.quantity, "tsp");
+    const responseQuantities = convertToLargestWholeUnit(response.quantity, "tsp");
 
     return {
         id: response.id,
         name: response.name,
-        quantities: responseQuantities.map((item) => `${item.quantity} ${item.type}`)
+        quantities: responseQuantities.map((item) => `${item.amount} ${item.type}`)
     };
 }
 
@@ -29,7 +29,7 @@ async function createIngredient() {
     const quantity = Number(safeElementById<HTMLInputElement>("ingredient-quantity").value);
     const quantityType = safeElementById<HTMLSelectElement>("ingredient-quantity-type").value;
 
-    const teaspoons = convertDownToTsp(quantity, quantityType as VolumeType);
+    const teaspoons = convertToSmallestUnit(quantity, quantityType as VolumeType);
 
     return await JSONRequest<IngredientResponse>("POST", "/api/ingredient", { name, quantity: teaspoons });
 }
