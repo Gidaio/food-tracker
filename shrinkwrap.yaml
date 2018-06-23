@@ -1,11 +1,11 @@
 dependencies:
-  better-sqlite3: 4.1.0
+  better-sqlite3: 4.1.4
   express: 4.16.3
-  winston: 2.4.2
+  winston: 2.4.3
 devDependencies:
   '@types/better-sqlite3': 3.1.3
-  '@types/express': 4.11.1
-  '@types/jquery': 3.3.1
+  '@types/express': 4.16.0
+  '@types/jquery': 3.3.4
   '@types/winston': 2.3.9
 packages:
   /@types/better-sqlite3/3.1.3:
@@ -14,58 +14,69 @@ packages:
     dev: true
     resolution:
       integrity: sha512-nnoebG2LgbK1WQ0dn7jtJ+RQJXcC/0G9oajJA7T+tKq2HrL9KzjMDKfe6sqkigg5HLH08WE4LRK3QDDYXPO1+w==
-  /@types/body-parser/1.16.8:
+  /@types/body-parser/1.17.0:
     dependencies:
-      '@types/express': 4.11.1
-      '@types/node': 9.6.6
+      '@types/connect': 3.4.32
+      '@types/node': 10.3.5
     dev: true
     resolution:
-      integrity: sha512-BdN2PXxOFnTXFcyONPW6t0fHjz2fvRZHVMFpaS0wYr+Y8fWEaNOs4V8LEu/fpzQlMx+ahdndgTaGTwPC+J/EeA==
+      integrity: sha512-a2+YeUjPkztKJu5aIF2yArYFQQp8d51wZ7DavSHjFuY1mqVgidGyzEQ41JIVNy82fXj8yPgy2vJmfIywgESW6w==
+  /@types/connect/3.4.32:
+    dependencies:
+      '@types/node': 10.3.5
+    dev: true
+    resolution:
+      integrity: sha512-4r8qa0quOvh7lGD0pre62CAb1oni1OO6ecJLGCezTmhQ8Fz50Arx9RUszryR8KlgK6avuSXvviL6yWyViQABOg==
   /@types/events/1.2.0:
     dev: true
     resolution:
       integrity: sha512-KEIlhXnIutzKwRbQkGWb/I4HFqBuUykAdHgDED6xqwXJfONCjF5VoE0cXEiurh3XauygxzeDzgtXUqvLkxFzzA==
-  /@types/express-serve-static-core/4.11.1:
+  /@types/express-serve-static-core/4.16.0:
     dependencies:
       '@types/events': 1.2.0
-      '@types/node': 9.6.6
+      '@types/node': 10.3.5
+      '@types/range-parser': 1.2.2
     dev: true
     resolution:
-      integrity: sha512-EehCl3tpuqiM8RUb+0255M8PhhSwTtLfmO7zBBdv0ay/VTd/zmrqDfQdZFsa5z/PVMbH2yCMZPXsnrImpATyIw==
-  /@types/express/4.11.1:
+      integrity: sha512-lTeoCu5NxJU4OD9moCgm0ESZzweAx0YqsAcab6OB0EB3+As1OaHtKnaGJvcngQxYsi9UNv0abn4/DRavrRxt4w==
+  /@types/express/4.16.0:
     dependencies:
-      '@types/body-parser': 1.16.8
-      '@types/express-serve-static-core': 4.11.1
-      '@types/serve-static': 1.13.1
+      '@types/body-parser': 1.17.0
+      '@types/express-serve-static-core': 4.16.0
+      '@types/serve-static': 1.13.2
     dev: true
     resolution:
-      integrity: sha512-ttWle8cnPA5rAelauSWeWJimtY2RsUf2aspYZs7xPHiWgOlPn6nnUfBMtrkcnjFJuIHJF4gNOdVvpLK2Zmvh6g==
+      integrity: sha512-TtPEYumsmSTtTetAPXlJVf3kEqb6wZK0bZojpJQrnD/djV4q1oB6QQ8aKvKqwNPACoe02GNiy5zDzcYivR5Z2w==
   /@types/integer/1.0.0:
     dev: true
     resolution:
       integrity: sha512-3viiRKLoSP2Qr78nMoQjkDc0fan4BgmpOyV1+1gKjE8wWXo3QQ78WItO6f9WuBf3qe3ymDYhM65oqHTOZ0rFxw==
-  /@types/jquery/3.3.1:
+  /@types/jquery/3.3.4:
     dev: true
     resolution:
-      integrity: sha512-N3h+rzN518yl2xKrW0o6KKdNmWZ+OwG6SoM5TBEQFF0tTv5wXPEsoOuYQ2Kt3/89XbcSZUJLdjiT/2c3BR/ApQ==
+      integrity: sha512-KqgLNDh8oTl43/2B78S7tjwPnOxPtP9wQsLptbuQCmMwqH5QuPZOk36RsNgbs3mnq/3SCyG1l/GJmhKk5Dg68g==
   /@types/mime/2.0.0:
     dev: true
     resolution:
       integrity: sha512-A2TAGbTFdBw9azHbpVd+/FkdW2T6msN1uct1O9bH3vTerEHKZhTXJUQXy+hNq1B0RagfU8U+KBdqiZpxjhOUQA==
-  /@types/node/9.6.6:
+  /@types/node/10.3.5:
     dev: true
     resolution:
-      integrity: sha512-SJe0g5cZeGNDP5sD8mIX3scb+eq8LQQZ60FXiKZHipYSeEFZ5EKml+NNMiO76F74TY4PoMWlNxF/YRY40FOvZQ==
-  /@types/serve-static/1.13.1:
+      integrity: sha512-6lRwZN0Y3TuglwaaZN2XPocobmzLlhxcqDjKFjNYSsXG/TFAGYkCqkzZh4+ms8iTHHQE6gJXLHPV7TziVGeWhg==
+  /@types/range-parser/1.2.2:
+    dev: true
+    resolution:
+      integrity: sha512-HtKGu+qG1NPvYe1z7ezLsyIaXYyi8SoAVqWDZgDQ8dLrsZvSzUNCwZyfX33uhWxL/SU0ZDQZ3nwZ0nimt507Kw==
+  /@types/serve-static/1.13.2:
     dependencies:
-      '@types/express-serve-static-core': 4.11.1
+      '@types/express-serve-static-core': 4.16.0
       '@types/mime': 2.0.0
     dev: true
     resolution:
-      integrity: sha512-jDMH+3BQPtvqZVIcsH700Dfi8Q3MIcEx16g/VdxjoqiGR/NntekB10xdBpirMKnPe9z2C5cBmL0vte0YttOr3Q==
+      integrity: sha512-/BZ4QRLpH/bNYgZgwhKEh+5AsboDBcUdlBYgzoLX0fpj3Y2gp6EApyOlM3bK53wQS/OE1SrdSYBAbux2D1528Q==
   /@types/winston/2.3.9:
     dependencies:
-      '@types/node': 9.6.6
+      '@types/node': 10.3.5
     dev: true
     resolution:
       integrity: sha512-zzruYOEtNgfS3SBjcij1F6HlH6My5n8WrBNhP3fzaRM22ba70QBC2ATs18jGr88Fy43c0z8vFJv5wJankfxv2A==
@@ -86,15 +97,14 @@ packages:
     dev: false
     resolution:
       integrity: sha1-+PwEyjoTeErenhZBr5hXjPvWR6k=
-  /better-sqlite3/4.1.0:
+  /better-sqlite3/4.1.4:
     dependencies:
       bindings: 1.3.0
-      integer: 1.0.3
-      lzz-gyp: 0.4.2
+      integer: 1.0.5
     dev: false
     requiresBuild: true
     resolution:
-      integrity: sha512-IYcH1F14DfdIzDzSg7TF+0b+GpYmf6UFgV0ZWsaaczy548/S5LFMkYeKHl8EAOQQb1mSHt0lkJA0BGHMRwGOcg==
+      integrity: sha512-Y11HN9PQ9YUeKFMrmiHyOLAKElk2ATJzBZJvuzNwTMxoS7vUEEyLnUCtcBFqViLwbomr0RQwp2MBy/ogxF50PA==
   /bindings/1.3.0:
     dev: false
     resolution:
@@ -299,13 +309,13 @@ packages:
     dev: false
     resolution:
       integrity: sha1-Yzwsg+PaQqUC9SRmAiSA9CCCYd4=
-  /integer/1.0.3:
+  /integer/1.0.5:
     dependencies:
       bindings: 1.3.0
     dev: false
     requiresBuild: true
     resolution:
-      integrity: sha512-yXyGHha2cDP6qyc9EMR9SsRVYhD7gvmXgVdLhKbyE8seHx0WVo11RRRU1p+sQearQMe1Ezfc8prWx5BnmSaVVA==
+      integrity: sha512-3jqqAHL1gwgl3y0YzFLU0E1fECboNMz9RON8ycqRr3P/cAZN6kcMWWn35UybkYNuB1VjhpSf5WnAqmN0WpKP1Q==
   /ipaddr.js/1.6.0:
     dev: false
     engines:
@@ -316,10 +326,6 @@ packages:
     dev: false
     resolution:
       integrity: sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
-  /lzz-gyp/0.4.2:
-    dev: false
-    resolution:
-      integrity: sha1-SVxEA0ofUMSKYPDvnCjUJ2Olspc=
   /media-typer/0.3.0:
     dev: false
     engines:
@@ -500,7 +506,7 @@ packages:
       node: '>= 0.8'
     resolution:
       integrity: sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
-  /winston/2.4.2:
+  /winston/2.4.3:
     dependencies:
       async: 1.0.0
       colors: 1.0.3
@@ -512,9 +518,9 @@ packages:
     engines:
       node: '>= 0.10.0'
     resolution:
-      integrity: sha512-4S/Ad4ZfSNl8OccCLxnJmNISWcm2joa6Q0YGDxlxMzH0fgSwWsjMt+SmlNwCqdpaPg3ev1HKkMBsIiXeSUwpbA==
+      integrity: sha512-GYKuysPz2pxYAVJD2NPsDLP5Z79SDEzPm9/j4tCjkF/n89iBNGBMJcR+dMUqxgPNgoSs6fVygPi+Vl2oxIpBuw==
 registry: 'https://registry.npmjs.org/'
-shrinkwrapMinorVersion: 5
+shrinkwrapMinorVersion: 7
 shrinkwrapVersion: 3
 specifiers:
   '@types/better-sqlite3': ^3.1.3
