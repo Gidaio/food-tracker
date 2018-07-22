@@ -2,47 +2,39 @@
 /// <reference path="./common.ts" />
 // tslint:enable:no-reference
 
-interface IngredientResponse {
-    id: number;
-    name: string;
-    quantity: number;
-}
-
 interface Ingredient {
     id: number;
     name: string;
-    quantities: string[];
+    quantity: Quantity;
 }
 
-function parseIngredientResponse(response: IngredientResponse): Ingredient {
-    const responseQuantities = convertToLargestWholeUnit(response.quantity, "tsp");
+window.onload = () => {
+    const ingredientsList = safeElementById<HTMLDivElement>("ingredients-list");
 
-    return {
-        id: response.id,
-        name: response.name,
-        quantities: responseQuantities.map((item) => `${item.amount} ${item.type}`)
+    const ingredientForm = safeElementById<HTMLFormElement>("ingredient-form");
+    ingredientForm.onsubmit = () => {
+        createIngredient().then((newIngredient) => {
+            newIngredient.quantity = convertToLargestWholeUnit(newIngredient.quantity);
+            addIngredientToElement(ingredientsList, newIngredient);
+            ingredientForm.reset();
+        });
+        return false;
     };
-}
 
-async function createIngredient() {
-    const name = safeElementById<HTMLInputElement>("ingredient-name").value;
-    const quantity = Number(safeElementById<HTMLInputElement>("ingredient-quantity").value);
-    const quantityType = safeElementById<HTMLSelectElement>("ingredient-quantity-type").value;
-
-    const teaspoons = convertToSmallestUnit(quantity, quantityType as VolumeType);
-
-    return await JSONRequest<IngredientResponse>("POST", "/api/ingredient", { name, quantity: teaspoons });
-}
+    getAllIngredients().then((allIngredients) => {
+        for (const ingredient of allIngredients) {
+            addIngredientToElement(ingredientsList, ingredient);
+        }
+    });
+};
 
 async function getAllIngredients() {
-    const ingredientResponses = await JSONRequest<IngredientResponse[]>("GET", "/api/ingredient");
-    const ingredients: Ingredient[] = [];
+    const response = await JSONRequest<Ingredient[]>("GET", "/api/ingredients");
 
-    for (const response of ingredientResponses) {
-        ingredients.push(parseIngredientResponse(response));
-    }
-
-    return ingredients;
+    return response.map((ingredient) => {
+        ingredient.quantity = convertToLargestWholeUnit(ingredient.quantity);
+        return ingredient;
+    });
 }
 
 function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) {
@@ -72,7 +64,7 @@ function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) 
                         name: "strong",
                         content: ["Quantity: "]
                     },
-                        ingredient.quantities.join(", ")
+                        `${ingredient.quantity.amount} ${ingredient.quantity.unit}`
                     ]
                 }]
             }]
@@ -98,22 +90,15 @@ function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) 
     container.appendChild(child);
 }
 
-window.onload = () => {
-    const ingredientsList = safeElementById<HTMLDivElement>("ingredients-list");
+async function createIngredient() {
+    const name = safeElementById<HTMLInputElement>("ingredient-name").value;
 
-    const ingredientForm = safeElementById<HTMLFormElement>("ingredient-form");
-    ingredientForm.onsubmit = () => {
-        createIngredient().then((newIngredient) => {
-            const parsedIngredient = parseIngredientResponse(newIngredient);
-            addIngredientToElement(ingredientsList, parsedIngredient);
-            ingredientForm.reset();
-        });
-        return false;
+    const quantity: Quantity = {
+        amount: Number(safeElementById<HTMLInputElement>("ingredient-quantity").value),
+        unit: safeElementById<HTMLSelectElement>("ingredient-quantity-type").value as UnitType
     };
 
-    getAllIngredients().then((allIngredients) => {
-        for (const ingredient of allIngredients) {
-            addIngredientToElement(ingredientsList, ingredient);
-        }
-    });
-};
+    const smallQuantity = convertToSmallestUnit(quantity);
+
+    return await JSONRequest<Ingredient>("POST", "/api/ingredients", { name, quantity: smallQuantity });
+}

@@ -4,13 +4,13 @@ import { LoggerInstance } from "winston";
 
 interface Quantity {
     amount: number;
-    unit: string;
+    unit: "tsp" | "oz";
 }
 
 interface Ingredient {
     id: number;
     name: string;
-    quantity: Quantity
+    quantity: Quantity;
 }
 
 export class IngredientService {
@@ -66,7 +66,7 @@ export class IngredientService {
     }
 
     private create(name: string, quantity: Quantity): number {
-        this.logger.debug(`Creating ingredient with name ${name} and quantity ${quantity} tsp...`);
+        this.logger.debug(`Creating ingredient with name ${name} and quantity ${quantity.amount} ${quantity.unit}...`);
 
         const createIngredient = this.database.prepare(`
             INSERT INTO ingredients (name, amount, unit) VALUES (?, ?, ?);`);

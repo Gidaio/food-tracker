@@ -20,7 +20,7 @@ class App {
 
         this.app.use(express.json());
 
-        this.app.use("/api/ingredient", this.ingredients.routes);
+        this.app.use("/api/ingredients", this.ingredients.routes);
 
         this.app.listen(3000, () => {
             console.log("Listening on port 3000.");

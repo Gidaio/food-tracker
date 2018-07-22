@@ -11,11 +11,11 @@ interface ElementDescriptor {
 
 interface Quantity {
     amount: number;
-    type: UnitType;
+    unit: UnitType;
 }
 
 interface Conversion {
-    type: UnitType;
+    unit: UnitType;
     factor: number;
 }
 
@@ -32,63 +32,63 @@ const conversions: ConversionSet = {
     // Volume conversions
     tsp: {
         up: {
-            type: "tbsp",
+            unit: "tbsp",
             factor: (1 / 3)
         }
     },
     tbsp: {
         down: {
-            type: "tsp",
+            unit: "tsp",
             factor: 3
         },
         up: {
-            type: "fl oz",
+            unit: "fl oz",
             factor: 0.5
         }
     },
     "fl oz": {
         down: {
-            type: "tbsp",
+            unit: "tbsp",
             factor: 2
         },
         up: {
-            type: "cup",
+            unit: "cup",
             factor: 0.125
         }
     },
     cup: {
         down: {
-            type: "fl oz",
+            unit: "fl oz",
             factor: 8
         },
         up: {
-            type: "pt",
+            unit: "pt",
             factor: 0.5
         }
     },
     pt: {
         down: {
-            type: "cup",
+            unit: "cup",
             factor: 2
         },
         up: {
-            type: "qt",
+            unit: "qt",
             factor: 0.5
         }
     },
     qt: {
         down: {
-            type: "pt",
+            unit: "pt",
             factor: 2
         },
         up: {
-            type: "gal",
+            unit: "gal",
             factor: 0.25
         }
     },
     gal: {
         down: {
-            type: "qt",
+            unit: "qt",
             factor: 4
         }
     },
@@ -96,13 +96,13 @@ const conversions: ConversionSet = {
     // Weight conversions
     oz: {
         up: {
-            type: "lbs",
+            unit: "lbs",
             factor: 1 / 16
         }
     },
     lbs: {
         down: {
-            type: "oz",
+            unit: "oz",
             factor: 16
         }
     }
@@ -178,35 +178,40 @@ function JSONRequest<T>(method: HTTPMethod, url: string, data?: object | undefin
 }
 
 function convertToSmallestUnit(quantity: Quantity): Quantity {
-    let currentQuantity = quantity;
+    const currentQuantity = quantity;
 
-    while (conversions[currentQuantity.type].down) {
-        const conversion = conversions[currentQuantity.type].down!;
+    while (conversions[currentQuantity.unit].down) {
+        const conversion = conversions[currentQuantity.unit].down!;
         currentQuantity.amount *= conversion.factor;
-        currentQuantity.type = conversion.type;
+        currentQuantity.unit = conversion.unit;
     }
 
     return currentQuantity;
 }
 
 function convertToLargestWholeUnit(quantity: Quantity): Quantity {
-    let currentQuantity = { ...quantity };
-    let previousQuantity = { ...currentQuantity };
-
-    while (currentQuantity.amount > 1 && conversions[currentQuantity.type].up) {
-        previousQuantity = { ...currentQuantity };
-        const conversion = conversions[currentQuantity.type].up!;
-        currentQuantity.amount *= conversion.factor;
-        currentQuantity.type = conversion.type;
+    if (!conversions[quantity.unit].up) {
+        return quantity;
     }
 
-    return previousQuantity
+    const conversion = conversions[quantity.unit].up!;
+    const convertedQuantity: Quantity = {
+        amount: quantity.amount * conversion.factor,
+        unit: conversion.unit
+    };
+
+    if (convertedQuantity.amount > 1) {
+        return convertToLargestWholeUnit(convertedQuantity);
+    }
+    else {
+        return quantity;
+    }
 }
 
 function formatQuantityAmount(amount: number): string {
     const amountString = amount.toFixed(2);
 
-    let index = amountString.length - 1
+    let index = amountString.length - 1;
     while (amountString[index] === "0" || amountString[index] === ".") {
         index--;
         if (amountString[index] === ".") {
@@ -215,5 +220,5 @@ function formatQuantityAmount(amount: number): string {
         }
     }
 
-    return amountString.slice(0, index + 1)
+    return amountString.slice(0, index + 1);
 }
