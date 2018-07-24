@@ -1,112 +1,10 @@
 type HTTPMethod = "GET" | "PUT" | "POST" | "DELETE";
-type VolumeType = "tsp" | "tbsp" | "fl oz" | "cup" | "pt" | "qt" | "gal";
-type WeightType = "oz" | "lbs";
-type UnitType = VolumeType | WeightType;
 
 interface ElementDescriptor {
     name: string;
     content?: Array<string | ElementDescriptor>;
     attributes?: { [key: string]: any };
 }
-
-interface Quantity {
-    amount: number;
-    unit: UnitType;
-}
-
-interface Conversion {
-    unit: UnitType;
-    factor: number;
-}
-
-interface ConversionLink {
-    up?: Conversion;
-    down?: Conversion;
-}
-
-type ConversionSet = {
-    [K in UnitType]: ConversionLink
-};
-
-const conversions: ConversionSet = {
-    // Volume conversions
-    tsp: {
-        up: {
-            unit: "tbsp",
-            factor: (1 / 3)
-        }
-    },
-    tbsp: {
-        down: {
-            unit: "tsp",
-            factor: 3
-        },
-        up: {
-            unit: "fl oz",
-            factor: 0.5
-        }
-    },
-    "fl oz": {
-        down: {
-            unit: "tbsp",
-            factor: 2
-        },
-        up: {
-            unit: "cup",
-            factor: 0.125
-        }
-    },
-    cup: {
-        down: {
-            unit: "fl oz",
-            factor: 8
-        },
-        up: {
-            unit: "pt",
-            factor: 0.5
-        }
-    },
-    pt: {
-        down: {
-            unit: "cup",
-            factor: 2
-        },
-        up: {
-            unit: "qt",
-            factor: 0.5
-        }
-    },
-    qt: {
-        down: {
-            unit: "pt",
-            factor: 2
-        },
-        up: {
-            unit: "gal",
-            factor: 0.25
-        }
-    },
-    gal: {
-        down: {
-            unit: "qt",
-            factor: 4
-        }
-    },
-
-    // Weight conversions
-    oz: {
-        up: {
-            unit: "lbs",
-            factor: 1 / 16
-        }
-    },
-    lbs: {
-        down: {
-            unit: "oz",
-            factor: 16
-        }
-    }
-};
 
 // Adapted from
 // https://stackoverflow.com/questions/2946656/advantages-of-createelement-over-innerhtml
@@ -175,37 +73,6 @@ function JSONRequest<T>(method: HTTPMethod, url: string, data?: object | undefin
 
         xhr.send(JSON.stringify(data));
     });
-}
-
-function convertToSmallestUnit(quantity: Quantity): Quantity {
-    const currentQuantity = quantity;
-
-    while (conversions[currentQuantity.unit].down) {
-        const conversion = conversions[currentQuantity.unit].down!;
-        currentQuantity.amount *= conversion.factor;
-        currentQuantity.unit = conversion.unit;
-    }
-
-    return currentQuantity;
-}
-
-function convertToLargestWholeUnit(quantity: Quantity): Quantity {
-    if (!conversions[quantity.unit].up) {
-        return quantity;
-    }
-
-    const conversion = conversions[quantity.unit].up!;
-    const convertedQuantity: Quantity = {
-        amount: quantity.amount * conversion.factor,
-        unit: conversion.unit
-    };
-
-    if (convertedQuantity.amount > 1) {
-        return convertToLargestWholeUnit(convertedQuantity);
-    }
-    else {
-        return quantity;
-    }
 }
 
 function formatQuantityAmount(amount: number): string {

@@ -8,13 +8,21 @@ interface Ingredient {
     quantity: Quantity;
 }
 
+interface Quantity {
+    amount: number;
+    unit: UnitType;
+}
+
+type UnitType = VolumeType | WeightType;
+type VolumeType = "tsp" | "tbsp" | "fl oz" | "cup" | "pt" | "qt" | "gal";
+type WeightType = "oz" | "lbs";
+
 window.onload = () => {
     const ingredientsList = safeElementById<HTMLDivElement>("ingredients-list");
 
     const ingredientForm = safeElementById<HTMLFormElement>("ingredient-form");
     ingredientForm.onsubmit = () => {
         createIngredient().then((newIngredient) => {
-            newIngredient.quantity = convertToLargestWholeUnit(newIngredient.quantity);
             addIngredientToElement(ingredientsList, newIngredient);
             ingredientForm.reset();
         });
@@ -29,12 +37,7 @@ window.onload = () => {
 };
 
 async function getAllIngredients() {
-    const response = await JSONRequest<Ingredient[]>("GET", "/api/ingredients");
-
-    return response.map((ingredient) => {
-        ingredient.quantity = convertToLargestWholeUnit(ingredient.quantity);
-        return ingredient;
-    });
+    return await JSONRequest<Ingredient[]>("GET", "/api/ingredients");
 }
 
 function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) {
@@ -64,7 +67,7 @@ function addIngredientToElement(container: HTMLElement, ingredient: Ingredient) 
                         name: "strong",
                         content: ["Quantity: "]
                     },
-                        `${ingredient.quantity.amount} ${ingredient.quantity.unit}`
+                        `${formatQuantityAmount(ingredient.quantity.amount)} ${ingredient.quantity.unit}`
                     ]
                 }]
             }]
@@ -98,7 +101,5 @@ async function createIngredient() {
         unit: safeElementById<HTMLSelectElement>("ingredient-quantity-type").value as UnitType
     };
 
-    const smallQuantity = convertToSmallestUnit(quantity);
-
-    return await JSONRequest<Ingredient>("POST", "/api/ingredients", { name, quantity: smallQuantity });
+    return await JSONRequest<Ingredient>("POST", "/api/ingredients", { name, quantity });
 }
