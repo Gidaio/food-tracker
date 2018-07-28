@@ -1,4 +1,5 @@
 import { Ingredient } from "./ingredient";
+import { Service } from "./service";
 
 import Database from "better-sqlite3";
 import express from "express";
@@ -6,17 +7,9 @@ import { LoggerInstance } from "winston";
 
 const unitTypes = ["tsp", "tbsp", "fl oz", "cup", "pt", "qt", "gal", "oz", "lbs"];
 
-export class IngredientService {
-    private database: Database;
-    private logger: LoggerInstance;
-
-    public routes: express.Router;
-
+export class IngredientService extends Service {
     public constructor(database: Database, logger: LoggerInstance) {
-        this.database = database;
-        this.logger = logger;
-
-        this.routes = this.setRoutes();
+        super(database, logger);
 
         const createTable = database.prepare(`
             CREATE TABLE IF NOT EXISTS ingredients (
@@ -29,7 +22,7 @@ export class IngredientService {
         createTable.run();
     }
 
-    private setRoutes(): express.Router {
+    protected setRoutes(): express.Router {
         const router = express.Router();
         router.get("/", (request, response) => {
             this.logger.debug("GET request on ingredients.");
