@@ -2,7 +2,7 @@ type VolumeType = "tsp" | "tbsp" | "fl oz" | "cup" | "pt" | "qt" | "gal";
 type WeightType = "oz" | "lbs";
 type UnitType = VolumeType | WeightType;
 
-interface IngredientProperties {
+export interface IngredientProperties {
     id: number;
     name: string;
     quantity: Quantity;
@@ -112,25 +112,22 @@ export class Ingredient {
     public name: string;
     public quantity: Quantity;
 
-    public constructor(id: number, name: string, quantity: Quantity) {
+    public constructor(id: number, name: string, amount: number, unit: UnitType)
+    public constructor(id: number, name: string, quantity: Quantity)
+    public constructor(id: number, name: string, amountOrQuantity: number | Quantity, unit?: UnitType) {
         this.id = id;
         this.name = name;
-        this.quantity = this.convertToSmallestUnit(quantity);
+
+        if (!unit) {
+            this.quantity = Ingredient.convertToSmallestUnit(amountOrQuantity as Quantity);
+        }
+        else {
+            const quantity = { amount: amountOrQuantity as number, unit };
+            this.quantity = Ingredient.convertToSmallestUnit(quantity);
+        }
     }
 
-    public serialize(): string {
-        return JSON.stringify(this.objectify());
-    }
-
-    public objectify(): IngredientProperties {
-        return {
-            id: this.id,
-            name: this.name,
-            quantity: this.convertToLargestWholeUnit(this.quantity)
-        };
-    }
-
-    private convertToSmallestUnit(quantity: Quantity): Quantity {
+    private static convertToSmallestUnit(quantity: Quantity): Quantity {
         const currentQuantity = quantity;
 
         while (conversions[currentQuantity.unit].down) {
@@ -142,7 +139,7 @@ export class Ingredient {
         return currentQuantity;
     }
 
-    private convertToLargestWholeUnit(quantity: Quantity): Quantity {
+    private static convertToLargestWholeUnit(quantity: Quantity): Quantity {
         if (!conversions[quantity.unit].up) {
             return quantity;
         }
@@ -154,10 +151,22 @@ export class Ingredient {
         };
 
         if (convertedQuantity.amount > 1) {
-            return this.convertToLargestWholeUnit(convertedQuantity);
+            return Ingredient.convertToLargestWholeUnit(convertedQuantity);
         }
         else {
             return quantity;
         }
+    }
+
+    public serialize(): string {
+        return JSON.stringify(this.objectify());
+    }
+
+    public objectify(): IngredientProperties {
+        return {
+            id: this.id,
+            name: this.name,
+            quantity: Ingredient.convertToLargestWholeUnit(this.quantity)
+        };
     }
 }

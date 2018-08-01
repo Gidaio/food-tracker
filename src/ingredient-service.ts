@@ -1,72 +1,45 @@
-import { Ingredient } from "./ingredient";
+import { HTTPError } from "./errors";
+import { Ingredient, IngredientProperties } from "./ingredient";
 import { Service } from "./service";
-
-import Database from "better-sqlite3";
-import express from "express";
-import { LoggerInstance } from "winston";
 
 const unitTypes = ["tsp", "tbsp", "fl oz", "cup", "pt", "qt", "gal", "oz", "lbs"];
 
 export class IngredientService extends Service {
-    public constructor(database: Database, logger: LoggerInstance) {
-        super(database, logger);
-
-        const createTable = database.prepare(`
-            CREATE TABLE IF NOT EXISTS ingredients (
+    protected createTables(): void {
+        const createTable = this.database.prepare(
+            `CREATE TABLE IF NOT EXISTS ingredients (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT,
                 amount INTEGER,
                 unit TEXT
-            );`);
+            );`
+        );
 
         createTable.run();
     }
 
-    protected setRoutes(): express.Router {
-        const router = express.Router();
-        router.get("/", (request, response) => {
-            this.logger.debug("GET request on ingredients.");
-
-            const ingredients = this.getAllIngredients();
-
-            this.logger.debug("Sending response.");
-
-            response.setHeader("Content-Type", "application/json");
-            response.status(200).send(
-                JSON.stringify(
-                    ingredients.map((ingredient) => ingredient.objectify())
-                )
-            );
-        });
-
-        router.post("/", (request, response) => {
-            this.logger.debug(`POST request on ingredients with body ${JSON.stringify(request.body)}.`);
-
-            const requestIngredient = this.validateIngredient(request.body);
-
-            this.logger.debug("Body is valid.");
-
-            const responseIngredient = this.insertIngredient(requestIngredient);
-
-            this.logger.debug("Sending response.");
-
-            response.setHeader("Content-Type", "application/json");
-            response.status(200).send(responseIngredient.serialize());
-        });
-
-        return router;
+    protected setRoutes(): void {
+        this.routes.get("/", this.endpoint(() => ({}), this.getAllIngredients.bind(this)));
+        this.routes.post("/", this.endpoint(
+            this.validateIngredient,
+            this.insertIngredient.bind(this))
+        );
     }
 
     private validateIngredient(body: any): Ingredient {
-        if (!body.name) { throw new Error("Missing name on request."); }
-        if (typeof body.name !== "string") { throw new Error("Name should be a string."); }
+        if (!body.name) { throw new HTTPError(400, "Missing name on request."); }
+        if (typeof body.name !== "string") { throw new HTTPError(400, "Name should be a string."); }
 
-        if (!body.quantity) { throw new Error("Missing quantity on request."); }
-        if (!body.quantity.amount) { throw new Error("Missing quantity amount on request."); }
-        if (typeof body.quantity.amount !== "number") { throw new Error("Quantity amount should be a number."); }
-        if (!body.quantity.unit) { throw new Error("Missing quantity unit on request."); }
+        if (!body.quantity) { throw new HTTPError(400, "Missing quantity on request."); }
+        if (!body.quantity.amount) {
+            throw new HTTPError(400, "Missing quantity amount on request.");
+        }
+        if (typeof body.quantity.amount !== "number") {
+            throw new HTTPError(400, "Quantity amount should be a number.");
+        }
+        if (!body.quantity.unit) { throw new HTTPError(400, "Missing quantity unit on request."); }
         if (!unitTypes.includes(body.quantity.unit)) {
-            throw new Error(`Quantity unit must be one of ${unitTypes.join(", ")}.`);
+            throw new HTTPError(400, `Quantity unit must be one of ${unitTypes.join(", ")}.`);
         }
 
         return new Ingredient(0, body.name, body.quantity);
@@ -88,21 +61,19 @@ export class IngredientService extends Service {
         return new Ingredient(newId, ingredient.name, ingredient.quantity);
     }
 
-    private getAllIngredients(): Ingredient[] {
+    private getAllIngredients(): IngredientProperties[] {
         this.logger.debug("Getting all ingredients...");
 
-        const getAllIngredients = this.database.prepare("SELECT * FROM ingredients");
-        const allIngredients = getAllIngredients.all().map((dbIngredient) => new Ingredient(
+        const getIngredientsQuery = this.database.prepare("SELECT * FROM ingredients");
+        const allIngredients = getIngredientsQuery.all().map((dbIngredient) => new Ingredient(
             dbIngredient.id,
             dbIngredient.name,
-            {
-                amount: dbIngredient.amount,
-                unit: dbIngredient.unit
-            }
+            dbIngredient.amount,
+            dbIngredient.unit
         ));
 
         this.logger.debug(`Got ingredients: ${JSON.stringify(allIngredients)}`);
 
-        return allIngredients;
+        return allIngredients.map((ingredient) => ingredient.objectify());
     }
 }
