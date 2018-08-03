@@ -8,8 +8,7 @@ export class IngredientService extends Service {
     protected createTables(): void {
         const createTable = this.database.prepare(
             `CREATE TABLE IF NOT EXISTS ingredients (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
+                name TEXT PRIMARY KEY,
                 amount INTEGER,
                 unit TEXT
             );`
@@ -22,7 +21,7 @@ export class IngredientService extends Service {
         this.routes.get("/", this.endpoint(() => ({}), this.getAllIngredients.bind(this)));
         this.routes.post("/", this.endpoint(
             this.validateIngredient,
-            this.insertIngredient.bind(this))
+            this.createIngredient.bind(this))
         );
     }
 
@@ -42,23 +41,19 @@ export class IngredientService extends Service {
             throw new HTTPError(400, `Quantity unit must be one of ${unitTypes.join(", ")}.`);
         }
 
-        return new Ingredient(0, body.name, body.quantity);
+        return new Ingredient(body.name, body.quantity);
     }
 
-    private insertIngredient(ingredient: Ingredient): Ingredient {
+    private createIngredient(ingredient: Ingredient): IngredientProperties {
         this.logger.debug(`Creating ingredient with name ${ingredient.name} and
             quantity ${ingredient.quantity.amount} ${ingredient.quantity.unit}...`);
 
-        const createIngredient = this.database.prepare(`
-            INSERT INTO ingredients (name, amount, unit) VALUES (?, ?, ?);`);
+        const createIngredient = this.database.prepare(
+            `INSERT INTO ingredients (name, amount, unit) VALUES (?, ?, ?);`
+        );
         createIngredient.run(ingredient.name, ingredient.quantity.amount, ingredient.quantity.unit);
 
-        const getId = this.database.prepare("SELECT LAST_INSERT_ROWID();");
-        const newId = getId.get()["LAST_INSERT_ROWID()"];
-
-        this.logger.debug(`Ingredient created with id ${newId}.`);
-
-        return new Ingredient(newId, ingredient.name, ingredient.quantity);
+        return ingredient.objectify();
     }
 
     private getAllIngredients(): IngredientProperties[] {
@@ -66,7 +61,6 @@ export class IngredientService extends Service {
 
         const getIngredientsQuery = this.database.prepare("SELECT * FROM ingredients");
         const allIngredients = getIngredientsQuery.all().map((dbIngredient) => new Ingredient(
-            dbIngredient.id,
             dbIngredient.name,
             dbIngredient.amount,
             dbIngredient.unit

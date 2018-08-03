@@ -3,7 +3,6 @@ type WeightType = "oz" | "lbs";
 type UnitType = VolumeType | WeightType;
 
 export interface IngredientProperties {
-    id: number;
     name: string;
     quantity: Quantity;
 }
@@ -108,14 +107,12 @@ const conversions: ConversionSet = {
 };
 
 export class Ingredient {
-    public id: number;
     public name: string;
     public quantity: Quantity;
 
-    public constructor(id: number, name: string, amount: number, unit: UnitType)
-    public constructor(id: number, name: string, quantity: Quantity)
-    public constructor(id: number, name: string, amountOrQuantity: number | Quantity, unit?: UnitType) {
-        this.id = id;
+    public constructor(name: string, amount: number, unit: UnitType)
+    public constructor(name: string, quantity: Quantity)
+    public constructor(name: string, amountOrQuantity: number | Quantity, unit?: UnitType) {
         this.name = name;
 
         if (!unit) {
@@ -164,7 +161,6 @@ export class Ingredient {
 
     public objectify(): IngredientProperties {
         return {
-            id: this.id,
             name: this.name,
             quantity: Ingredient.convertToLargestWholeUnit(this.quantity)
         };
