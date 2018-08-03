@@ -1,3 +1,5 @@
+import { HTTPError } from "./errors";
+
 type VolumeType = "tsp" | "tbsp" | "fl oz" | "cup" | "pt" | "qt" | "gal";
 type WeightType = "oz" | "lbs";
 type UnitType = VolumeType | WeightType;
@@ -25,6 +27,8 @@ interface ConversionLink {
 type ConversionSet = {
     [K in UnitType]: ConversionLink
 };
+
+const unitTypes = ["tsp", "tbsp", "fl oz", "cup", "pt", "qt", "gal", "oz", "lbs"];
 
 const conversions: ConversionSet = {
     // Volume conversions
@@ -109,6 +113,25 @@ const conversions: ConversionSet = {
 export class Ingredient {
     public name: string;
     public quantity: Quantity;
+
+    public static validate(body: any): Ingredient {
+        if (!body.name) { throw new HTTPError(400, "Missing name on request."); }
+        if (typeof body.name !== "string") { throw new HTTPError(400, "Name should be a string."); }
+
+        if (!body.quantity) { throw new HTTPError(400, "Missing quantity on request."); }
+        if (!body.quantity.amount) {
+            throw new HTTPError(400, "Missing quantity amount on request.");
+        }
+        if (typeof body.quantity.amount !== "number") {
+            throw new HTTPError(400, "Quantity amount should be a number.");
+        }
+        if (!body.quantity.unit) { throw new HTTPError(400, "Missing quantity unit on request."); }
+        if (!unitTypes.includes(body.quantity.unit)) {
+            throw new HTTPError(400, `Quantity unit must be one of ${unitTypes.join(", ")}.`);
+        }
+
+        return new Ingredient(body.name, body.quantity);
+    }
 
     public constructor(name: string, amount: number, unit: UnitType)
     public constructor(name: string, quantity: Quantity)
