@@ -1,0 +1,18 @@
+{
+  "name": "food-tracker",
+  "version": "1.0.0",
+  "description": "A tracker for recipes and food stores.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gidaio/food-tracker.git"
+  },
+  "author": "Tanis Kint",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Gidaio/food-tracker/issues"
+  },
+  "homepage": "https://github.com/Gidaio/food-tracker#readme"
+}
