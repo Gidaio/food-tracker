@@ -1,0 +1,337 @@
+openapi: 3.0.0
+
+info:
+  title: Food Tracker
+  description: Designing my server!
+  version: 1.0.0
+
+tags:
+  - name: Ingredients
+  - name: Recipes
+  - name: Meal Plans
+
+paths:
+  /ingredients:
+    summary: List ingredients.
+    get:
+      description: A list of ingredients.
+      tags:
+        - Ingredients
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfIngredients'
+
+  /ingredients/{ingredientName}:
+    summary: Manage ingredients.
+    parameters:
+      - name: ingredientName
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      description: Create an ingredient.
+      tags:
+        - Ingredients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ingredient'
+      responses:
+        '201':
+          description: Successfully Created
+    put:
+      description: Update the quantity of an ingredient.
+      tags:
+        - Ingredients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ingredient'
+      responses:
+        '200':
+          description: Successfully Updated
+    delete:
+      description: Remove and stop tracking an ingredient.
+      tags:
+        - Ingredients
+      responses:
+        '200':
+          description: Successfully Deleted
+
+  /recipes:
+    summary: List recipes
+    get:
+      description: Lists names and descriptions (maybe pictures) of recipes.
+      tags:
+        - Recipes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeInfo'
+
+  /recipes/{recipeName}:
+    summary: Manage recipes.
+    parameters:
+      - name: recipeName
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      description: Get all the info on a specific recipe.
+      tags:
+        - Recipes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+    post:
+      description: Create a recipe with the given name.
+      tags:
+        - Recipes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+      responses:
+        '201':
+          description: Successfully Created
+    put:
+      description: Update a specific recipe.
+      tags:
+        - Recipes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+      responses:
+        '200':
+          description: Successfully Updated
+    delete:
+      description: Delete a recipe.
+      tags:
+        - Recipes
+      responses:
+        '200':
+          description: Successfully Deleted
+
+  /recipes/{recipeName}/make:
+    summary: Make a recipe.
+    parameters:
+      - name: recipeName
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags:
+        - Recipes
+      responses:
+        '200':
+          description: Successfully Made
+
+  /mealplans:
+    summary: List meal plans.
+    get:
+      description: List names and descriptions for meal plans.
+      tags:
+        - Meal Plans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfMealPlans'
+
+  /mealplans/{mealPlanStartTime}:
+    summary: Manage meal plans.
+    parameters:
+      - name: mealPlanStartTime
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      description: Get the information on a specific meal plan.
+      tags:
+        - Meal Plans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MealPlan'
+    post:
+      description: Create a meal plan.
+      tags:
+        - Meal Plans
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealPlan'
+      responses:
+        '201':
+          description: Successfully Created
+    put:
+      description: Update a meal plan.
+      tags:
+        - Meal Plans
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealPlan'
+      responses:
+        '200':
+          description: OK
+    delete:
+      description: Delete a meal plan.
+      tags:
+        - Meal Plans
+      responses:
+        '200':
+          description: OK
+
+components:
+  schemas:
+    Ingredient:
+      type: object
+      properties:
+        amount:
+          type: integer
+        unit:
+          type: string
+      required: [amount, unit]
+      example:
+        amount: 7
+        unit: cup
+
+    ListOfIngredients:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          amount:
+            type: integer
+          unit:
+            type: string
+        required: [name, amount, unit]
+      example:
+        - name: Flour
+          amount: 7
+          unit: cup
+        - name: Chocolate Chips
+          amount: 12
+          unit: lb
+
+    Recipe:
+      type: object
+      properties:
+        description:
+          type: string
+        notes:
+          type: string
+        ingredients:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              amount:
+                type: integer
+              unit:
+                type: string
+            required: [name, amount, unit]
+      required: [ingredients]
+      example:
+        description: Just a good ol' PB sammy.
+        notes: Man, this thing is dang good.
+        ingredients:
+          - name: Bread
+            amount: 2
+            unit: count
+          - name: Peanut Butter
+            amount: 2
+            unit: tbsp
+
+    RecipeInfo:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          description:
+            type: string
+        required: [name]
+      example:
+        - name: Peanut Butter Sandwich
+          description: Just a good ol' PB sammy.
+        - name: Chocolate Chip Cookies
+
+    MealPlan:
+      type: object
+      properties:
+        name:
+          type: string
+        notes:
+          type: string
+        recipes:
+          type: array
+          items:
+            type: string
+          maxItems: 7
+          minItems: 2
+      required: [startDate, recipes]
+      example:
+        name: Healthy Week
+        recipes:
+          - A salad
+          - Another salad
+          - Maybe some chicken
+
+    ListOfMealPlans:
+      type: array
+      items:
+        type: object
+        properties:
+          startDate:
+            type: string
+            format: date-time
+          name:
+            type: string
+          notes:
+            type: string
+        required: [startDate]
+      example:
+        - startDate: '2018-08-20'
+          notes: I honestly wasn't a huge fan of this spread. Let's not do it again.
+        - startDate: '2018-08-27'
+          name: Unhealthy Week
