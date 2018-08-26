@@ -11,6 +11,25 @@ tags:
   - name: Meal Plans
 
 paths:
+  /login:
+    summary: Login and get a token.
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required: [username, password]
+      responses:
+        '200':
+          description: OK
+
   /ingredients:
     summary: List ingredients.
     get:
