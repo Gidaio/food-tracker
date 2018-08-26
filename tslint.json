@@ -1,5 +1,26 @@
 {
-    "defaultSeverity": "error",
-    "extends": "tslint:all",
-    "rules": {}
+  "defaultSeverity": "error",
+  "extends": "tslint:all",
+  "rules": {
+    "newline-per-chained-call": false,
+    "no-console": false,
+    "one-line": [
+      true,
+      "check-catch",
+      "check-finally",
+      "check-open-brace",
+      "check-whitespace"
+    ],
+    "semicolon": [true, "never"],
+    "typedef": [
+      true,
+      "call-signature",
+      "arrow-call-signature",
+      "parameter",
+      "arrow-parameter",
+      "property-declaration",
+      "member-variable-declaration",
+      "array-destructuring"
+    ]
+  }
 }
