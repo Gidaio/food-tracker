@@ -2,8 +2,14 @@
   "defaultSeverity": "error",
   "extends": "tslint:all",
   "rules": {
+    "interface-name": false,
     "newline-per-chained-call": false,
+    "match-default-export-name": false,
+    "member-ordering": false,
     "no-console": false,
+    "no-inferrable-types": false,
+    "no-non-null-assertion": false,
+    "no-unsafe-any": false,
     "one-line": [
       true,
       "check-catch",
@@ -11,13 +17,14 @@
       "check-open-brace",
       "check-whitespace"
     ],
+    "only-arrow-functions": [true, "allow-named-functions"],
+    "prefer-function-over-method": false,
     "semicolon": [true, "never"],
+    "trailing-comma": false,
     "typedef": [
       true,
       "call-signature",
-      "arrow-call-signature",
       "parameter",
-      "arrow-parameter",
       "property-declaration",
       "member-variable-declaration",
       "array-destructuring"

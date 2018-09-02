@@ -10,19 +10,21 @@ const app = express()
 app.use(cookieParser())
 app.use(express.json())
 
+app.use((request, response, next) => {
+  response.setHeader("Access-Control-Allow-Origin", "*")
+  response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type")
+  next()
+})
+
 app.post("/login", (request: express.Request, response: express.Response) => {
-  if (request.cookies.session) {
-    response.status(HTTP_STATUS_OK).send(`You're already signed in! Here's your number: ${request.cookies.session}`)
+  console.log("Body", request.body)
+
+  const { username, password } = request.body
+  if (username === "tanis" && password === "pa$$w0rd") {
+    response.status(HTTP_STATUS_OK).send({ authorization: "197" })
   }
   else {
-    const { username, password } = request.body
-    if (username === "tanis" && password === "pa$$w0rd") {
-      response.setHeader("set-cookie", "session=197")
-      response.status(HTTP_STATUS_OK).send("Sending you a cookie!")
-    }
-    else {
-      response.status(HTTP_STATUS_UNAUTHORIZED).send("Nope. Try again.")
-    }
+    response.status(HTTP_STATUS_UNAUTHORIZED).send("Nope. Try again.")
   }
 })
 
