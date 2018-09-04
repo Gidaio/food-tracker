@@ -10,6 +10,7 @@
     "no-inferrable-types": false,
     "no-non-null-assertion": false,
     "no-unsafe-any": false,
+    "object-literal-sort-keys": false,
     "one-line": [
       true,
       "check-catch",

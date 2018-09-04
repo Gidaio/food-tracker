@@ -17,10 +17,12 @@
   "homepage": "https://github.com/Gidaio/food-tracker#readme",
   "dependencies": {
     "cookie-parser": "^1.4.3",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "nedb": "^1.8.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.1",
-    "@types/express": "^4.16.0"
+    "@types/express": "^4.16.0",
+    "@types/nedb": "^1.8.5"
   }
 }
