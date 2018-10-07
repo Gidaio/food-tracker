@@ -40,6 +40,8 @@ app.post("/login", (request: express.Request, response: express.Response) => {
 })
 
 app.get("/ingredients", (request, response) => {
+  console.log("Body", request.body)
+
   if (!isAuthorized(request, response)) { return }
 
   // TODO: Find/make a more precise error type.
@@ -62,6 +64,8 @@ app.get("/ingredients", (request, response) => {
 })
 
 app.post("/ingredients/:ingredientName", (request, response) => {
+  console.log("Body", request.body)
+
   if (!isAuthorized(request, response)) { return }
 
   const { amount, unit } = request.body
