@@ -35,7 +35,7 @@ app.post("/login", (request: express.Request, response: express.Response) => {
     response.status(HTTP_OK).send({ authorization: "197" })
   }
   else {
-    response.status(HTTP_UNAUTHORIZED).send("Nope. Try again.")
+    response.status(HTTP_UNAUTHORIZED).send({ error: "Nope. Try again." })
   }
 })
 
