@@ -77,12 +77,42 @@ export function setRoutes(app: express.Express, database: nedb): void {
       return
     }
 
-    database.update({ _id: request.params.ingredientName }, { $set: { amount, unit } }, {}, (error, numberUpdated) => {
+    const query = { _id: request.params.ingredientName }
+
+    database.update(query, { $set: { amount, unit } }, {}, (error, numberUpdated) => {
       if (error) {
         console.log(error)
         response.status(HttpResponse.InternalServerError).send({ error })
       }
       else if (numberUpdated === 0) {
+        response.status(HttpResponse.BadRequest).send({ error: "No ingredient with that name." })
+      }
+      else {
+        response.status(HttpResponse.Ok).send()
+      }
+    })
+  })
+
+  app.delete("/ingredients/:ingredientName", (request, response) => {
+    console.log("Body", request.body)
+
+    if (!isAuthorized(request, response)) {
+      return
+    }
+
+    const { amount, unit } = request.body
+    if (!amount || !unit) {
+      response.status(HttpResponse.BadRequest).send({ error: "Amount or unit missing." })
+
+      return
+    }
+
+    database.remove({ _id: request.params.ingredientName}, {}, (error, numberRemoved) => {
+      if (error) {
+        console.log(error)
+        response.status(HttpResponse.InternalServerError).send({ error })
+      }
+      else if (numberRemoved === 0) {
         response.status(HttpResponse.BadRequest).send({ error: "No ingredient with that name." })
       }
       else {
